@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Provision a repo-local Lua 5.4 + LuaRocks toolchain via hererocks, then install
+# the pinned dev rocks. Re-runnable: hererocks recreates the env, luarocks no-ops
+# rocks that are already at the requested version.
+
+LUA_VERSION="${LUA_VERSION:-5.4.4}"
+LUAROCKS_VERSION="${LUAROCKS_VERSION:-3.8.0}"
+ENV_DIR="${ENV_DIR:-.lua}"
+VENV_DIR="${VENV_DIR:-.bootstrap-venv}"
+
+BUSTED_VERSION="${BUSTED_VERSION:-2.2.0}"
+LUACHECK_VERSION="${LUACHECK_VERSION:-1.2.0}"
+LFS_VERSION="${LFS_VERSION:-1.8.0}"
+LUASOCKET_VERSION="${LUASOCKET_VERSION:-3.1.0}"
+
+bold() { printf '\033[1m%s\033[0m\n' "$*"; }
+
+# hererocks is a small Python tool that builds Lua from source. Prefer one on
+# PATH; otherwise provision it into a local venv so bootstrapping never touches
+# the global Python environment. Only python3 + a C compiler are required.
+if command -v hererocks >/dev/null 2>&1; then
+  HEREROCKS="hererocks"
+else
+  bold "hererocks not on PATH — installing it into ${VENV_DIR}/"
+  python3 -m venv "${VENV_DIR}"
+  "${VENV_DIR}/bin/pip" install --quiet --upgrade pip hererocks
+  HEREROCKS="${VENV_DIR}/bin/hererocks"
+fi
+
+bold "Installing Lua ${LUA_VERSION} + LuaRocks ${LUAROCKS_VERSION} into ${ENV_DIR}/"
+"${HEREROCKS}" "${ENV_DIR}" --lua "${LUA_VERSION}" --luarocks "${LUAROCKS_VERSION}"
+
+ROCKS="${ENV_DIR}/bin/luarocks"
+bold "Installing pinned rocks"
+"${ROCKS}" install busted "${BUSTED_VERSION}"
+"${ROCKS}" install luacheck "${LUACHECK_VERSION}"
+"${ROCKS}" install luafilesystem "${LFS_VERSION}"
+"${ROCKS}" install luasocket "${LUASOCKET_VERSION}"
+
+bold "Done."
+echo "Toolchain installed in ${ENV_DIR}/bin (lua, luarocks, busted, luacheck)."
+echo "StyLua is a separate binary — install with: brew install stylua"

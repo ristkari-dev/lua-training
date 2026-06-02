@@ -1,0 +1,14 @@
+-- busted default configuration.
+-- The Makefile passes explicit ROOT directories (per-lesson isolation), so this
+-- only fixes the spec filename pattern and per-file insulation.
+--
+-- The pattern matches files ENDING in "_spec.lua" (anchored with $), NOT the
+-- looser default "_spec". This matters because the new-lesson template ships
+-- `main_spec.lua.tmpl` files: the loose pattern would match those and busted
+-- would try to load a .tmpl as Lua (it contains `${number}`) and crash.
+return {
+  default = {
+    pattern = "_spec%.lua$",
+    ["auto-insulate"] = true,
+  },
+}
