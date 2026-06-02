@@ -4,14 +4,20 @@ local lfs = require("lfs")
 local M = {}
 
 local function read_file(path)
-  local f = assert(io.open(path, "rb"))
+  local f, err = io.open(path, "rb")
+  if not f then
+    error(("cannot read %q: %s"):format(path, tostring(err)), 0)
+  end
   local data = f:read("*a")
   f:close()
   return data
 end
 
 local function write_file(path, data)
-  local f = assert(io.open(path, "wb"))
+  local f, err = io.open(path, "wb")
+  if not f then
+    error(("cannot write %q: %s"):format(path, tostring(err)), 0)
+  end
   f:write(data)
   f:close()
 end
@@ -50,7 +56,11 @@ local function render(text, subs)
 end
 
 local function module_dir()
-  return (debug.getinfo(1, "S").source:match("^@(.*/)") or "./")
+  local dir = debug.getinfo(1, "S").source:match("^@(.*/)")
+  if not dir then
+    error("could not determine new_lesson module directory; pass template_dir explicitly", 0)
+  end
+  return dir
 end
 
 local function copy_with_substitution(source, target, subs)

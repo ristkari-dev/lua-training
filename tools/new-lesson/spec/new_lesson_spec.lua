@@ -85,7 +85,7 @@ describe("scaffold", function()
     local target = new_lesson.scaffold("99-demo", lessons, TEMPLATE_DIR)
     local ex = read_file(target .. "/exercises/main.lua")
     local sol = read_file(target .. "/solutions/main.lua")
-    assert.is_truthy(ex:find("lesson 99", 1, true))
+    assert.is_truthy(ex:find("TODO: implement lesson 99 exercise", 1, true))
     assert.is_truthy(sol:find("hello from lesson 99", 1, true))
   end)
 
