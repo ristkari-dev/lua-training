@@ -114,6 +114,9 @@ This makes `require("new_lesson")` / `require("server")` / `require("main")` res
 # hererocks-managed Lua 5.4 + LuaRocks toolchain
 /.lua/
 
+# local venv used by scripts/bootstrap to fetch hererocks (when not on PATH)
+/.bootstrap-venv/
+
 # generated static slide site (Plan B)
 /dist/
 
@@ -199,6 +202,7 @@ set -euo pipefail
 LUA_VERSION="${LUA_VERSION:-5.4.7}"
 LUAROCKS_VERSION="${LUAROCKS_VERSION:-3.11.1}"
 ENV_DIR="${ENV_DIR:-.lua}"
+VENV_DIR="${VENV_DIR:-.bootstrap-venv}"
 
 BUSTED_VERSION="${BUSTED_VERSION:-2.2.0}"
 LUACHECK_VERSION="${LUACHECK_VERSION:-1.2.0}"
@@ -207,15 +211,20 @@ LUASOCKET_VERSION="${LUASOCKET_VERSION:-3.1.0}"
 
 bold() { printf '\033[1m%s\033[0m\n' "$*"; }
 
-if ! command -v hererocks >/dev/null 2>&1; then
-  bold "hererocks not found. Install it once, then re-run 'make bootstrap':"
-  echo "  pipx install hererocks                 # recommended"
-  echo "  # or: python3 -m pip install --user hererocks"
-  exit 1
+# hererocks is a small Python tool that builds Lua from source. Prefer one on
+# PATH; otherwise provision it into a local venv so bootstrapping never touches
+# the global Python environment. Only python3 + a C compiler are required.
+if command -v hererocks >/dev/null 2>&1; then
+  HEREROCKS="hererocks"
+else
+  bold "hererocks not on PATH — installing it into ${VENV_DIR}/"
+  python3 -m venv "${VENV_DIR}"
+  "${VENV_DIR}/bin/pip" install --quiet --upgrade pip hererocks
+  HEREROCKS="${VENV_DIR}/bin/hererocks"
 fi
 
 bold "Installing Lua ${LUA_VERSION} + LuaRocks ${LUAROCKS_VERSION} into ${ENV_DIR}/"
-hererocks "${ENV_DIR}" --lua "${LUA_VERSION}" --luarocks "${LUAROCKS_VERSION}"
+"${HEREROCKS}" "${ENV_DIR}" --lua "${LUA_VERSION}" --luarocks "${LUAROCKS_VERSION}"
 
 ROCKS="${ENV_DIR}/bin/luarocks"
 bold "Installing pinned rocks"
@@ -240,7 +249,7 @@ Expected: `syntax ok`.
 Run: `make bootstrap` is not available yet (the Makefile lands in Task 9), so run the script directly:
 `./scripts/bootstrap`
 
-Expected: hererocks builds Lua 5.4.7 and installs LuaRocks under `.lua/`, then the four rocks install. Takes ~1–3 minutes. If it prints "hererocks not found", install hererocks (`pipx install hererocks`) and re-run.
+Expected: the script provisions `hererocks` into `.bootstrap-venv/` (if not already on PATH), builds Lua 5.4.7 + LuaRocks under `.lua/`, then installs the four rocks. Takes ~2–4 minutes and requires network access. Needs only `python3` + a C compiler (both already present on this machine).
 
 - [ ] **Step 9: Verify the toolchain**
 
@@ -1511,12 +1520,10 @@ extending Lua from a host).
 ## Prerequisites
 
 - A C compiler + `make` (to build Lua). On macOS: `xcode-select --install`.
-- [`hererocks`](https://github.com/luarocks/hererocks) — provisions a pinned,
-  repo-local Lua 5.4 + LuaRocks toolchain under `./.lua/`:
-  ```bash
-  pipx install hererocks          # recommended
-  # or: python3 -m pip install --user hererocks
-  ```
+- Python 3 — used only to fetch [`hererocks`](https://github.com/luarocks/hererocks),
+  the tool that builds the pinned Lua 5.4 + LuaRocks toolchain under `./.lua/`.
+  `make bootstrap` provisions `hererocks` into a local `./.bootstrap-venv/`
+  automatically when it is not already on your PATH — no global install needed.
 - [`StyLua`](https://github.com/JohnnyMorganz/StyLua) for `make fmt`:
   ```bash
   brew install stylua
