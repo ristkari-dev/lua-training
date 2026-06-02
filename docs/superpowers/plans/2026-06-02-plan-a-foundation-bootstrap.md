@@ -6,7 +6,7 @@
 
 **Architecture:** No package-manager workspace (Lua has no `uv`/`cargo` equivalent). A repo-local Lua 5.4 + LuaRocks tree is provisioned by `hererocks` into `./.lua/` via `scripts/bootstrap`; the pinned dev rocks (`busted`, `luacheck`, `luafilesystem`, `luasocket`) install into that tree. Two small Lua programs live under `tools/`: `new-lesson` (generates a lesson folder from an on-disk template tree) and `slides-dev` (a `luasocket`-based static server that mounts the lesson's `slides/` plus the shared `reveal/` assets). Each tool is a plain module + a thin CLI + `busted` specs. Reveal.js 5.1.0 is vendored under `shared/reveal/` and shared across all decks. A single Makefile is the canonical entry point. No npm, no Node — Lua + vendored static assets only.
 
-**Tech Stack:** Lua 5.4.7 (PUC-Rio), LuaRocks 3.11.1 (via `hererocks`), `busted` 2.2.0, `luacheck` 1.2.0, `luafilesystem` 1.8.0, `luasocket` 3.1.0, StyLua (separate binary), reveal.js 5.1.0 (vendored), GNU Make.
+**Tech Stack:** Lua 5.4.4 (PUC-Rio — the latest `hererocks` 0.25.1 supports), LuaRocks 3.11.1 (via `hererocks`), `busted` 2.2.0, `luacheck` 1.2.0, `luafilesystem` 1.8.0, `luasocket` 3.1.0, StyLua (separate binary), reveal.js 5.1.0 (vendored), GNU Make.
 
 ---
 
@@ -199,7 +199,8 @@ set -euo pipefail
 # the pinned dev rocks. Re-runnable: hererocks recreates the env, luarocks no-ops
 # rocks that are already at the requested version.
 
-LUA_VERSION="${LUA_VERSION:-5.4.7}"
+# hererocks 0.25.1 (current on PyPI) supports PUC-Rio Lua up to 5.4.4.
+LUA_VERSION="${LUA_VERSION:-5.4.4}"
 LUAROCKS_VERSION="${LUAROCKS_VERSION:-3.11.1}"
 ENV_DIR="${ENV_DIR:-.lua}"
 VENV_DIR="${VENV_DIR:-.bootstrap-venv}"
@@ -249,12 +250,12 @@ Expected: `syntax ok`.
 Run: `make bootstrap` is not available yet (the Makefile lands in Task 9), so run the script directly:
 `./scripts/bootstrap`
 
-Expected: the script provisions `hererocks` into `.bootstrap-venv/` (if not already on PATH), builds Lua 5.4.7 + LuaRocks under `.lua/`, then installs the four rocks. Takes ~2–4 minutes and requires network access. Needs only `python3` + a C compiler (both already present on this machine).
+Expected: the script provisions `hererocks` into `.bootstrap-venv/` (if not already on PATH), builds Lua 5.4.4 + LuaRocks under `.lua/`, then installs the four rocks. Takes ~2–4 minutes and requires network access. Needs only `python3` + a C compiler (both already present on this machine).
 
 - [ ] **Step 9: Verify the toolchain**
 
 Run: `.lua/bin/lua -v`
-Expected: `Lua 5.4.7  Copyright ...`.
+Expected: `Lua 5.4.4  Copyright ...`.
 
 Run: `.lua/bin/busted --version`
 Expected: prints a version (e.g. `2.2.0`).
