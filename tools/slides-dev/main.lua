@@ -129,7 +129,14 @@ local function main(argv)
   while true do
     local client = listener:accept()
     if client then
-      handle(client, slides_root, shared_root)
+      -- Never let one bad request (e.g. a file removed mid-serve) kill the loop.
+      local handled, handle_err = pcall(handle, client, slides_root, shared_root)
+      if not handled then
+        io.stderr:write("warning: error handling request: " .. tostring(handle_err) .. "\n")
+        pcall(function()
+          client:close()
+        end)
+      end
     end
   end
 end
