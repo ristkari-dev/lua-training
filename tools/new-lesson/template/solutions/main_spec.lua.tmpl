@@ -1,0 +1,9 @@
+local here = debug.getinfo(1, "S").source:match("^@(.*/)")
+package.path = here .. "?.lua;" .. package.path
+local main = require("main")
+
+describe("lesson ${number}", function()
+  it("hello returns the greeting", function()
+    assert.are.equal("hello from lesson ${number}", main.hello())
+  end)
+end)

@@ -1,0 +1,14 @@
+# hererocks-managed Lua 5.4 + LuaRocks toolchain
+/.lua/
+
+# local venv used by scripts/bootstrap to fetch hererocks (when not on PATH)
+/.bootstrap-venv/
+
+# generated static slide site (Plan B)
+/dist/
+
+# test/coverage artifacts
+luacov.*.out
+
+# macOS
+.DS_Store
