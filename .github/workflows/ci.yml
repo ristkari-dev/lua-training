@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The repo's own toolchain: hererocks builds a pinned Lua 5.4 + LuaRocks
+      # into ./.lua (scripts/bootstrap self-provisions hererocks into a venv).
+      # Cache it so only the first run pays the build cost.
+      - name: Cache Lua toolchain
+        id: cache-lua
+        uses: actions/cache@v4
+        with:
+          path: |
+            .lua
+            .bootstrap-venv
+          key: lua-${{ runner.os }}-${{ hashFiles('scripts/bootstrap') }}
+
+      - name: Bootstrap toolchain
+        if: steps.cache-lua.outputs.cache-hit != 'true'
+        run: make bootstrap
+
+      - name: Lint (luacheck)
+        run: make lint
+
+      - name: Tests (busted)
+        run: make test
+
+      - name: Build static slides site
+        run: make slides-build
+
+      - name: Verify dist contents
+        run: |
+          test -f dist/index.html
+          grep -q "Lua Training" dist/index.html
