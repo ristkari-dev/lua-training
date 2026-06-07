@@ -57,3 +57,13 @@ new-lesson: ## Scaffold a new lesson (NAME=NN-slug)
 slides-dev: ## Serve one lesson's deck locally on http://localhost:8000 (LESSON=NN-slug)
 	@test -n "$(LESSON)" || (echo "usage: make slides-dev LESSON=NN-slug" && exit 1)
 	$(LUA) tools/slides-dev/main.lua --lesson $(LESSON) --repo-root $(REPO_ROOT)
+
+.PHONY: slides-build
+slides-build: ## Build the static slides site into dist/
+	$(LUA) tools/build-index/main.lua --lessons lessons --shared shared/reveal --out dist
+
+.PHONY: slides-docker
+slides-docker: ## Build the deploy image and run it locally on http://localhost:8080
+	docker build -t lua-training-slides:local -f deploy/Dockerfile .
+	@echo "starting container on http://localhost:8080  (Ctrl-C to stop)"
+	docker run --rm -p 8080:8080 -e PORT=8080 lua-training-slides:local
