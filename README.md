@@ -8,7 +8,8 @@ extending Lua from a host).
 
 ## Prerequisites
 
-- A C compiler + `make` (to build Lua). On macOS: `xcode-select --install`.
+- A C compiler + `make` and the readline dev header (Lua is built from source).
+  On macOS: `xcode-select --install`. On Debian/Ubuntu: `sudo apt-get install build-essential libreadline-dev`.
 - Python 3 — used only to fetch [`hererocks`](https://github.com/luarocks/hererocks),
   the tool that builds the pinned Lua 5.4 + LuaRocks toolchain under `./.lua/`.
   `make bootstrap` provisions `hererocks` into a local `./.bootstrap-venv/`
