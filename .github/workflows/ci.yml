@@ -23,6 +23,13 @@ jobs:
             .bootstrap-venv
           key: lua-${{ runner.os }}-${{ hashFiles('scripts/bootstrap') }}
 
+      # Building Lua from source needs the readline dev header — hererocks compiles
+      # the interpreter with -DLUA_USE_READLINE. The runner has libreadline at
+      # runtime but not the -dev header. Only needed on a cache miss.
+      - name: Install Lua build dependencies
+        if: steps.cache-lua.outputs.cache-hit != 'true'
+        run: sudo apt-get update && sudo apt-get install -y libreadline-dev
+
       - name: Bootstrap toolchain
         if: steps.cache-lua.outputs.cache-hit != 'true'
         run: make bootstrap
