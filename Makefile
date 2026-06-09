@@ -41,12 +41,12 @@ test-lesson: ## Run one lesson's specs, exercises then solutions (LESSON=NN-slug
 	$(BUSTED) lessons/$(LESSON)/solutions
 
 .PHONY: lint
-lint: ## Run luacheck over the tools
-	$(LUACHECK) tools
+lint: ## Run luacheck over the tools and lessons
+	$(LUACHECK) tools lessons
 
 .PHONY: fmt
 fmt: ## Format Lua with StyLua (install separately: brew install stylua)
-	stylua tools
+	stylua tools lessons
 
 .PHONY: new-lesson
 new-lesson: ## Scaffold a new lesson (NAME=NN-slug)
