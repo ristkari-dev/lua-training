@@ -105,4 +105,4 @@ make test-lesson LESSON=02-values-types
 
 ## What's next
 
-**Lesson 03 — Control flow.**
+**Lesson 03 — Variables & scope.**
