@@ -81,6 +81,6 @@ cd lessons/03-variables-scope/solutions
 
 ## Going further
 
-- `local f <close> = …` (5.4) closes a value when its block ends; it needs a metatable, so it waits for Lesson 10.
+- `local f <close> = …` (5.4) closes a value when its block ends; it needs a metatable (Lesson 10), so `<close>` itself waits for Lesson 13.
 - Globals really live in a table called `_G`: `_G.count` and `count` are the same variable (Lesson 18).
 - `local function f() … end` lets `f` call itself; `local f = function() … end` does not, because `f` is not in scope yet inside the body (Lesson 06).

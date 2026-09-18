@@ -38,7 +38,7 @@
 lessons/03-variables-scope/             (scaffolded, then hand-authored)
 ├── README.md                           (Task 2 — rewritten)
 ├── slides/
-│   ├── index.html                      (from scaffold; title already "Lesson 03 — Variables & scope")
+│   ├── index.html                      (from scaffold, title WRONG — Task 2 hand-fixes it)
 │   ├── slides.md                       (Task 2 — rewritten, 11 slides)
 │   └── assets/.gitkeep                 (from scaffold, unchanged)
 ├── exercises/
@@ -230,7 +230,7 @@ done
 
 Expected: every directory reports at least one failure.
 - `narrow` → "walks 1, 1, 2, 3, 5, 8" fails (it returns 1 every call).
-- `wide` → "creates no global variables" fails, printing the leaked names (e.g. `{ *[current] = 1, *[upcoming] = 1 }`).
+- `wide` → "creates no global variables" fails, printing the leaked names (e.g. `{ *[current] = 1  [upcoming] = 2 }` — only the first differing key carries the `*`).
 - `sequential` → the sequence test fails (it yields 1, 2, 4).
 
 If any directory reports `3 successes`, STOP — the spec does not grade the lesson and the plan's author must be told.
@@ -274,10 +274,15 @@ git commit -m "feat(lesson-03): add next_fib exercise + solution with busted spe
 - Consumes: `scope.next_fib()` from Task 1, and the commands `make test-lesson LESSON=03-variables-scope` and `make lint`.
 - Produces: prose only; nothing later depends on it except the final verification in Task 3.
 
-- [ ] **Step 1: Check the deck bootstrap already carries the right title**
+- [ ] **Step 1: Fix the scaffold's title**
 
 Run: `grep '<title>' lessons/03-variables-scope/slides/index.html`
-Expected: `<title>Lesson 03 — Variables & scope</title>` (the scaffold fills this from `tools/build-index/catalog.lua`). If it differs, edit that one line to match exactly and note it in the task report.
+Expected: `<title>Lesson 03 — Variables Scope</title>`. The scaffold (`tools/new-lesson/new_lesson.lua`'s
+`parse_name`) derives the title by title-casing the slug — it never consults
+`tools/build-index/catalog.lua` — so a fresh scaffold always emits this title-cased
+form (and the same text in `# Lesson 03 — Variables Scope` in README.md and
+`### Variables Scope` in slides.md). Hand-fix the title line in `index.html` to
+`Lesson 03 — Variables &amp; scope` and note it in the task report.
 
 - [ ] **Step 2: Write `slides/slides.md`**
 
@@ -368,7 +373,7 @@ local function bump_outer()
 end
 ```
 
-luacheck: `shadowing upvalue n on line 1`
+luacheck: `shadowing upvalue 'n' on line 1`
 
 Note:
 "Upvalue" here just means a local from an enclosing scope — the full story is L15.
@@ -483,7 +488,7 @@ between calls, which is how a module keeps state without a single global.
 
 **Declaring vs assigning.** Inside a block, `local n = n + 1` declares a *new* `n`
 that hides the outer one; `n = n + 1` updates the outer one. luacheck warns about
-the first as `shadowing upvalue n` ("upvalue" means a local from an enclosing
+the first as `shadowing upvalue 'n'` ("upvalue" means a local from an enclosing
 scope — Lesson 15 tells the full story).
 
 **`<const>`.** Lua 5.4 lets you mark a local that never changes:
@@ -532,7 +537,7 @@ cd lessons/03-variables-scope/solutions
 
 ## Going further
 
-- `local f <close> = …` (5.4) closes a value when its block ends; it needs a metatable, so it waits for Lesson 10.
+- `local f <close> = …` (5.4) closes a value when its block ends; it needs a metatable (Lesson 10), so `<close>` itself waits for Lesson 13.
 - Globals really live in a table called `_G`: `_G.count` and `count` are the same variable (Lesson 18).
 - `local function f() … end` lets `f` call itself; `local f = function() … end` does not, because `f` is not in scope yet inside the body (Lesson 06).
 ````

@@ -153,9 +153,10 @@ The only decisions in the solution are *where the two numbers are declared* and
 - **Too narrow** — `local current, upcoming = 0, 1` inside `next_fib` re-initialises
   on every call, so the function returns 1 forever and "walks 1, 1, 2, 3, 5, 8" fails.
 - **Too wide** — dropping `local` puts the state in the global table; the
-  "creates no global variables" test fails and prints the offending name
-  (`{ *[current] = 1 }`), whatever it is called, and `make lint` reports
-  "setting non-standard global variable".
+  "creates no global variables" test fails and prints the offending names
+  (`{ *[current] = 1  [upcoming] = 2 }` — only the first differing key carries the
+  `*`), whatever they are called, and `make lint` reports "setting non-standard
+  global variable".
 - **Just right** — declared at the top of the chunk, the locals are invisible
   outside the file yet keep their values between calls.
 - **Right-hand side first** — `current = upcoming; upcoming = current + upcoming`
@@ -237,8 +238,9 @@ Four-file convention sections:
   `solutions/`
   (`local s = require("scope"); print(s.next_fib(), s.next_fib(), s.next_fib())` → `1 1 2`).
 - **Going further** (light, no new graded work) — the `<close>` attribute (5.4) exists
-  but needs metatables (L10); globals live in the table `_G` (L18); `local function f`
-  vs `local f = function` and what that means for recursion (L06).
+  but needs metatables (L10), so `<close>` itself waits for L13; globals live in the
+  table `_G` (L18); `local function f` vs `local f = function` and what that means for
+  recursion (L06).
 
 ## Verification (success criteria)
 
