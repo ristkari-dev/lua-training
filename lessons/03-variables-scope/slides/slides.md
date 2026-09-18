@@ -82,7 +82,7 @@ local function bump_outer()
 end
 ```
 
-luacheck: `shadowing upvalue n on line 1`
+luacheck: `shadowing upvalue 'n' on line 1`
 
 Note:
 "Upvalue" here just means a local from an enclosing scope — the full story is L15.

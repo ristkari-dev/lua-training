@@ -32,7 +32,7 @@ between calls, which is how a module keeps state without a single global.
 
 **Declaring vs assigning.** Inside a block, `local n = n + 1` declares a *new* `n`
 that hides the outer one; `n = n + 1` updates the outer one. luacheck warns about
-the first as `shadowing upvalue n` ("upvalue" means a local from an enclosing
+the first as `shadowing upvalue 'n'` ("upvalue" means a local from an enclosing
 scope — Lesson 15 tells the full story).
 
 **`<const>`.** Lua 5.4 lets you mark a local that never changes:
