@@ -75,7 +75,7 @@ It only works when the middle value can never be `false` or `nil`.
 
 ```lua
 local flag = true
-flag and false or true    -- true   (not false!)
+flag and false or true    -- true   (not false)
 ```
 
 Note:
@@ -133,13 +133,16 @@ not  #  -  ~      (unary)
 +  -
 ..
 <<  >>
-&  ~  |
+&
+~
+|
 <  >  <=  >=  ~=  ==
 and
 or
 ```
 
 `+` and `..` bind tighter than `and`/`or` — so the idiom needs parentheses.
+`&` binds tighter than `~`, which binds tighter than `|`.
 `&` binds tighter than `~=`.
 
 ---
