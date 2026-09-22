@@ -78,7 +78,7 @@ lessons/06-functions-testing/
 ├── slides/
 │   ├── index.html          # reveal bootstrap; since PR #9 the scaffold writes the
 │   │                       #   correct escaped title — verify, do not hand-edit
-│   ├── slides.md           # the deck (authored, 13 slides)
+│   ├── slides.md           # the deck (authored, 14 slides)
 │   └── assets/.gitkeep
 ├── exercises/
 │   ├── functions.lua       # tally() stub (errors)
@@ -263,7 +263,7 @@ future reader sees a decision rather than drift.
 
 ## Slides (`slides/slides.md`)
 
-13 slides. Every value below was run against the repo's Lua 5.4.4 and busted 2.2.0
+14 slides. Every value below was run against the repo's Lua 5.4.4 and busted 2.2.0
 before this spec was written.
 
 1. **Title** — "Lesson 06 — Functions & testing"; goal: functions that take and return
@@ -295,7 +295,9 @@ before this spec was written.
     `.was.called_with(5)`, `.was_not.called()`. A spy is a **callable table**, so
     `type(s)` is `"table"` — worth knowing before someone type-checks a callback. A
     spy answers *how* your code was called, which a return value never shows.
-13. **What's next** — Lesson 07, the Phase 1 capstone.
+13. **The exercise** — `tally`, the contract the spies grade, and
+    `make test-lesson LESSON=06-functions-testing`.
+14. **What's next** — Lesson 07, the Phase 1 capstone.
 
 ## README (`README.md`)
 
