@@ -1,23 +1,28 @@
 local here = debug.getinfo(1, "S").source:match("^@(.*/)")
 package.path = here .. "../?.lua;" .. package.path
 local builder = require("builder")
+local rmtree = builder.rmtree
 local lfs = require("lfs")
 
--- os.tmpname() is unique per call; os.time() was not, so two runs inside the
--- same second collided with "File exists".
+-- os.time() was not unique enough: two runs inside the same second collided with
+-- "File exists". os.tmpname() supplies the unique part, while $TMPDIR still
+-- decides where the directory lives.
 local _created = {}
 local function tmpdir()
-  local path = os.tmpname()
-  os.remove(path) -- os.tmpname creates a file; we want a directory of that name
+  local stamp = os.tmpname()
+  os.remove(stamp) -- os.tmpname creates a file; we only wanted its unique name
+  local base = (os.getenv("TMPDIR") or "/tmp"):gsub("/+$", "")
+  local path = base .. "/lua-training-build-" .. stamp:match("([^/]+)$")
   assert(lfs.mkdir(path))
   _created[#_created + 1] = path
   return path
 end
 
-teardown(function()
+after_each(function()
   for _, path in ipairs(_created) do
-    os.execute(string.format("rm -rf %q", path))
+    rmtree(path)
   end
+  _created = {}
 end)
 
 local function mkpath(path)
