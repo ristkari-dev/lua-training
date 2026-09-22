@@ -1,6 +1,12 @@
 -- Scaffold a new lua-training lesson from the template tree.
 local lfs = require("lfs")
 
+-- The canonical lesson titles live beside the site builder, so a scaffolded deck
+-- carries the same title the landing page will show.
+local module_path = debug.getinfo(1, "S").source:match("^@(.*/)") or "./"
+package.path = module_path .. "../build-index/?.lua;" .. package.path
+local catalog = require("catalog")
+
 local M = {}
 
 local function read_file(path)
@@ -43,6 +49,16 @@ local function mkdir_p(path)
       end
     end
   end
+end
+
+-- Titles reach HTML via index.html.tmpl; "Functions & testing" must not emit a
+-- bare ampersand. (build-index/builder.lua has its own copy: four lines beats
+-- making the scaffolder depend on the site builder.)
+local function escape_html(text)
+  local out = text:gsub("&", "&amp;")
+  out = out:gsub("<", "&lt;")
+  out = out:gsub(">", "&gt;")
+  return out
 end
 
 local function render(text, subs)
@@ -106,17 +122,25 @@ function M.parse_name(raw)
   for word in slug:gmatch("[^-]+") do
     words[#words + 1] = word:sub(1, 1):upper() .. word:sub(2)
   end
-  return raw, number, table.concat(words, " ")
+  return raw, number, table.concat(words, " "), slug
 end
 
 function M.scaffold(name, lessons_dir, template_dir)
-  local parsed_name, number, title = M.parse_name(name)
+  local parsed_name, number, title, slug = M.parse_name(name)
+  local listed = catalog.find(number, slug)
+  if listed then
+    title = listed.title
+  end
   local target = lessons_dir .. "/" .. parsed_name
   if attr_mode(target) ~= nil then
     error(("lesson already exists: %s"):format(target), 0)
   end
   template_dir = template_dir or (module_dir() .. "template")
-  copy_with_substitution(template_dir, target, { name = parsed_name, number = number, title = title })
+  copy_with_substitution(
+    template_dir,
+    target,
+    { name = parsed_name, number = number, title = title, title_html = escape_html(title) }
+  )
   return target
 end
 

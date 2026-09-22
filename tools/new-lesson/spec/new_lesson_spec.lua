@@ -95,6 +95,31 @@ describe("scaffold", function()
     assert.are.equal("file", lfs.attributes(target .. "/slides/assets/.gitkeep", "mode"))
   end)
 
+  it("takes the title from the catalog when the lesson is listed", function()
+    local lessons = tmpdir() .. "/lessons"
+    local target = new_lesson.scaffold("06-functions-testing", lessons, TEMPLATE_DIR)
+    local readme = read_file(target .. "/README.md")
+    local slides = read_file(target .. "/slides/slides.md")
+    assert.is_truthy(readme:find("Lesson 06 — Functions & testing", 1, true))
+    assert.is_truthy(slides:find("Functions & testing", 1, true))
+  end)
+
+  it("escapes the catalog title for the deck's index.html", function()
+    local lessons = tmpdir() .. "/lessons"
+    local target = new_lesson.scaffold("06-functions-testing", lessons, TEMPLATE_DIR)
+    local index = read_file(target .. "/slides/index.html")
+    assert.is_truthy(index:find("<title>Lesson 06 — Functions &amp; testing</title>", 1, true))
+  end)
+
+  it("falls back to title-casing a slug the catalog does not list", function()
+    local lessons = tmpdir() .. "/lessons"
+    local target = new_lesson.scaffold("99-demo-lesson", lessons, TEMPLATE_DIR)
+    local readme = read_file(target .. "/README.md")
+    local index = read_file(target .. "/slides/index.html")
+    assert.is_truthy(readme:find("Lesson 99 — Demo Lesson", 1, true))
+    assert.is_truthy(index:find("<title>Lesson 99 — Demo Lesson</title>", 1, true))
+  end)
+
   it("refuses to overwrite an existing lesson", function()
     local lessons = tmpdir() .. "/lessons"
     new_lesson.scaffold("99-demo", lessons, TEMPLATE_DIR)

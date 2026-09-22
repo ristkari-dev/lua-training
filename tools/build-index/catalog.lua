@@ -45,6 +45,17 @@ M.LESSONS = {
   { number = "23", slug = "capstone", title = "Capstone: embeddable scripting host", blurb = "plugins · config DSL · wrap-up", phase = 4 },
 }
 
+-- Look up a lesson row by its number and slug; nil when the pair is not listed
+-- (a scratch lesson scaffolded outside the curriculum, say).
+function M.find(number, slug)
+  for _, lesson in ipairs(M.LESSONS) do
+    if lesson.number == number and lesson.slug == slug then
+      return lesson
+    end
+  end
+  return nil
+end
+
 function M.dir_name(lesson)
   return lesson.number .. "-" .. lesson.slug
 end
