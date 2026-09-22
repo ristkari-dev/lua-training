@@ -122,7 +122,7 @@ When `false` is a legitimate value, test for `nil` instead:
 ```lua
 describe("tally", function()
   it("counts the passes", function()
-    assert.are.equal(3, functions.tally(nil, 1, 2, 3))
+    assert.are.equal(3, (functions.tally(nil, 1, 2, 3)))
   end)
 end)
 ```
@@ -154,7 +154,7 @@ recorded calls pile up from the test before.
 ## Spies
 
 ```lua
-local over_two = spy.new(function(v) return v > 2 end)
+local over_two = spy.new(function(v) return v ~= nil and v > 2 end)
 
 assert.spy(over_two).was.called(3)
 assert.spy(over_two).was.called_with(5)
@@ -179,8 +179,8 @@ function M.tally(check, ...)
 end
 ```
 
-Call `check` once per value, with exactly one argument. Varargs only — no
-`{...}`, no `table.pack`.
+Call `check` once per value, in order, with exactly one argument. Varargs only —
+no `{...}`, no `table.pack`.
 
 ```bash
 make test-lesson LESSON=06-functions-testing

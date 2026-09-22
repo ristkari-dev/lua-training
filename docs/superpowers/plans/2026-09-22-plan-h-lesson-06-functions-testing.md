@@ -33,7 +33,7 @@
 - **Scratch dir for throwaway files:** `/private/tmp/claude-501/-Users-ristkari-code-private-lua-training/f282ee64-4464-42c2-be99-69487673f9f6/scratchpad/l06-impl/`. Nothing there is ever committed.
 - **`make test-lesson` output is expected to be noisy:** the `exercises/` run fails by design (9 errors), then the `solutions/` run passes (9 successes); the target exits 0.
 - **Every Lua and busted value quoted in this plan was run against the repo's toolchain before the plan was written.** If one of your own runs contradicts the plan, report that rather than silently changing the text.
-- **The known, accepted dodge:** `table.pack(...)` with `.n` passes all nine tests. Documented in the design doc, closed in the README's prose (Task 2), never in the spec. Do not add tests or sandboxing to catch it. Plain `{...}` + `#` does NOT pass — it misses the trailing `nil`.
+- **Known, accepted dodges:** `table.pack(...)` with `.n`, and a positional unroll wide enough to cover the ten-value test (`local a, b, c, d, e, f, g, h, i, j = ...`), both pass all nine tests and lint clean. Documented in the design doc, closed in the README's prose (Task 2) — a fixed list of named parameters is banned by name, alongside `{...}` and `table.pack` — never in the spec. Do not add tests or sandboxing to catch either. Plain `{...}` + `#` does NOT pass — it misses the trailing `nil`.
 
 ## File Structure
 
@@ -566,7 +566,7 @@ When `false` is a legitimate value, test for `nil` instead:
 ```lua
 describe("tally", function()
   it("counts the passes", function()
-    assert.are.equal(3, functions.tally(nil, 1, 2, 3))
+    assert.are.equal(3, (functions.tally(nil, 1, 2, 3)))
   end)
 end)
 ```
@@ -598,7 +598,7 @@ recorded calls pile up from the test before.
 ## Spies
 
 ```lua
-local over_two = spy.new(function(v) return v > 2 end)
+local over_two = spy.new(function(v) return v ~= nil and v > 2 end)
 
 assert.spy(over_two).was.called(3)
 assert.spy(over_two).was.called_with(5)
@@ -623,8 +623,8 @@ function M.tally(check, ...)
 end
 ```
 
-Call `check` once per value, with exactly one argument. Varargs only — no
-`{...}`, no `table.pack`.
+Call `check` once per value, in order, with exactly one argument. Varargs only —
+no `{...}`, no `table.pack`.
 
 ```bash
 make test-lesson LESSON=06-functions-testing
@@ -702,12 +702,13 @@ how many of the values passed `check`, and how many failed. With no `check` give
 value passes when it is truthy.
 
 Two parts of the contract are graded by spies, so they are worth stating outright:
-**call `check` once per value — including values that are `nil` — with exactly one
-argument.** Watch the truncation rule here: `check(select(i, ...))` hands the check
-the i-th value *and every value after it*; `check((select(i, ...)))` or
+**call `check` once per value, in order — including values that are `nil` — with
+exactly one argument.** Watch the truncation rule here: `check(select(i, ...))` hands
+the check the i-th value *and every value after it*; `check((select(i, ...)))` or
 `local value = select(i, ...)` fixes it.
 
-**Varargs only: no `{...}` and no `table.pack` (both Lesson 08).**
+**Varargs only: no `{...}`, no `table.pack` (both Lesson 08), and no fixed list of
+named parameters either — you do not know how many values there will be.**
 `table.pack(...).n` gives the same answer and the tests cannot tell — but
 `select("#", ...)` costs nothing and is the point of this lesson.
 
@@ -760,7 +761,7 @@ Expected: `13` (fourteen slides separated by thirteen `---` lines).
 .lua/bin/lua -e 'local function s() return 1,2 end local a,b = s() local c = s() local d,e = 7 print(a,b,c,d,e)'   # 1 2 1 7 nil
 .lua/bin/lua -e 'local function s() return 1,2 end print(s()); print(s(), 9); print(9, s())'                        # 1 2 / 1 9 / 9 1 2
 .lua/bin/lua -e 'local function s() return 1,2 end print((s()))'                                                    # 1
-printf 'local a, b = 1, 2\nreturn (a, b)\n' > /tmp/l06check.lua; .lua/bin/lua /tmp/l06check.lua 2>&1 | head -1; rm -f /tmp/l06check.lua   # ')' expected near ','
+SCRATCH=/private/tmp/claude-501/-Users-ristkari-code-private-lua-training/f282ee64-4464-42c2-be99-69487673f9f6/scratchpad/l06-impl; mkdir -p "$SCRATCH"; printf 'local a, b = 1, 2\nreturn (a, b)\n' > "$SCRATCH/l06check.lua"; .lua/bin/lua "$SCRATCH/l06check.lua" 2>&1 | head -1; rm -f "$SCRATCH/l06check.lua"   # ')' expected near ','
 .lua/bin/lua -e 'print(select("#", 1, nil, nil), select("#"))'                                                      # 3  0
 .lua/bin/lua -e 'print(select(2, "a", "b", "c"))'                                                                   # b  c
 .lua/bin/lua -e 'print(0 or "fallback", false or "fallback")'                                                       # 0  fallback

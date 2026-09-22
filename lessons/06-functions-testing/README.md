@@ -57,12 +57,13 @@ how many of the values passed `check`, and how many failed. With no `check` give
 value passes when it is truthy.
 
 Two parts of the contract are graded by spies, so they are worth stating outright:
-**call `check` once per value — including values that are `nil` — with exactly one
-argument.** Watch the truncation rule here: `check(select(i, ...))` hands the check
-the i-th value *and every value after it*; `check((select(i, ...)))` or
+**call `check` once per value, in order — including values that are `nil` — with
+exactly one argument.** Watch the truncation rule here: `check(select(i, ...))` hands
+the check the i-th value *and every value after it*; `check((select(i, ...)))` or
 `local value = select(i, ...)` fixes it.
 
-**Varargs only: no `{...}` and no `table.pack` (both Lesson 08).**
+**Varargs only: no `{...}`, no `table.pack` (both Lesson 08), and no fixed list of
+named parameters either — you do not know how many values there will be.**
 `table.pack(...).n` gives the same answer and the tests cannot tell — but
 `select("#", ...)` costs nothing and is the point of this lesson.
 

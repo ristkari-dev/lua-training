@@ -224,7 +224,9 @@ written:
   `failed`, every value must be judged, and skipping nils fails two tests.
 - **Ten values in one test.** With a widest call of four or five, a positional unroll
   (`local a, b, c, d, e = ...` plus `if n >= k` dispatch) passes — it was a dodge
-  against *every* proposal in the panel. Ten values price it out.
+  against *every* proposal in the panel. Ten values raise the cost of the unroll; they
+  do not close it — a ten-wide unroll still passes 9/9 and lints clean, and no
+  behavioural spec can close it. The prose ban is the mechanism, as with `table.pack`.
 - **The reference writes `check((select(i, ...)))`.** Writing
   `local value = select(i, ...)` truncates just as well, but then the student who
   gets it *right* never meets the parenthesis rule — only the student who gets it
@@ -241,14 +243,18 @@ written:
   `"a|nil|b|"`. Two lines saying *a spy is just a function that keeps notes*, which is
   the demystification this lesson is named for.
 
-### The `table.pack` dodge
+### The `table.pack` dodge, and the wide unroll
 
 `table.pack(...)` with `values.n` passes all nine tests. `table.pack` records the true
 count in `.n`, so unlike plain `{...}` it survives the trailing-`nil` test, and no
-behavioural spec can distinguish it. The exercise brief therefore bans it by name,
-exactly as Lesson 04 bans `math.ceil`: **varargs only — no `{...}`, no `table.pack`
-(both Lesson 08); `table.pack(...).n` gives the same answer and the tests cannot tell,
-but `select("#", ...)` is the point of this lesson.**
+behavioural spec can distinguish it. A positional unroll wide enough to cover the
+ten-value test (`local a, b, c, d, e, f, g, h, i, j = ...`) is the same shape of
+problem — it also passes all nine tests and lints clean, and no behavioural spec
+closes it either. The exercise brief therefore bans both by name, exactly as Lesson 04
+bans `math.ceil`: **varargs only — no `{...}`, no `table.pack` (both Lesson 08), and no
+fixed list of named parameters either — you do not know how many values there will be;
+`table.pack(...).n` gives the same answer and the tests cannot tell, but
+`select("#", ...)` costs nothing and is the point of this lesson.**
 
 Note that plain `{...}` + `#` does **not** pass — it misses the trailing `nil` — so
 the only table route that works is the one that has already understood the lesson's
@@ -307,15 +313,14 @@ Four-file convention sections:
 - **Prereqs** — Lessons 01–05; toolchain via `make bootstrap`.
 - **Concepts** — short paragraphs mirroring the deck.
 - **Exercise brief** — implement `tally(check, ...)` returning passes then failures.
-  States the contract the spy grades: **call `check` once per value, with exactly one
-  argument**. Names the truncation bug verbatim: `check(select(i, ...))` hands the
-  check the i-th value *and every one after it*; `check((select(i, ...)))` or
-  `local value = select(i, ...)` fixes it. Bans `{...}` and `table.pack` by name, with
-  the reason above. Definition of done: `make test-lesson` passes **and** `make lint`
-  is clean.
-- **How to run** — `make test-lesson LESSON=06-functions-testing`; a REPL line from
-  `solutions/`; and `make test-lesson … -- --shuffle` as a way to see `before_each`
-  earning its keep.
+  States the contract the spy grades: **call `check` once per value, in order, with
+  exactly one argument**. Names the truncation bug verbatim: `check(select(i, ...))`
+  hands the check the i-th value *and every one after it*; `check((select(i, ...)))` or
+  `local value = select(i, ...)` fixes it. Bans `{...}`, `table.pack`, and a fixed list
+  of named parameters by name, with the reasons above. Definition of done: `make
+  test-lesson` passes **and** `make lint` is clean.
+- **How to run** — `make test-lesson LESSON=06-functions-testing`; `make lint`; and a
+  REPL line from `solutions/`.
 - **Going further** — the recursive peel (`walk(check, select("#", ...), ...)`) as the
   table-free alternative to the loop; `select(-1, ...)` for the last value; and the
   forwarding rule that `f(1, ...)` passes everything while `f(..., 1)` cuts `...` to
@@ -363,9 +368,9 @@ Four-file convention sections:
   "Going further" tease. Upvalue mechanics belong to Lesson 15.
 - Students **read** a spec but do not write one. Authoring tests is taught by example
   here; grading student-written tests is out of scope for the course's harness.
-- `stub` and `mock` are named as the spy's siblings, never used.
 - No changes to the tools, Makefile or `.luacheckrc`.
-- The `table.pack` dodge is closed in prose, not in the spec.
+- The `table.pack` dodge and the wide-unroll dodge are both closed in prose, not in
+  the spec.
 
 ## Open items deferred to implementation planning
 
