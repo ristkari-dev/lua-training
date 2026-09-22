@@ -80,7 +80,7 @@ lessons/04-operators/
 │   ├── index.html          # reveal bootstrap; the scaffold writes the WRONG title
 │   │                       #   ("Lesson 04 — Operators") — hand-fix it to
 │   │                       #   "Lesson 04 — Operators &amp; expressions"
-│   ├── slides.md           # the deck (authored, 12 slides)
+│   ├── slides.md           # the deck (authored, 13 slides)
 │   └── assets/.gitkeep
 ├── exercises/
 │   ├── operators.lua       # page_label() stub (errors)
@@ -198,7 +198,7 @@ future reader does not mistake it for an oversight.
 
 ## Slides (`slides/slides.md`)
 
-12 slides, `---`-separated, fenced ` ```lua ` blocks, `Note:` where useful. Every
+13 slides, `---`-separated, fenced ` ```lua ` blocks, `Note:` where useful. Every
 value below was run against the repo's Lua 5.4.4 before this spec was written.
 
 1. **Title** — "Lesson 04 — Operators & expressions" + one-line goal: build a whole
@@ -230,8 +230,9 @@ value below was run against the repo's Lua 5.4.4 before this spec was written.
     exercise needs: `+` and `..` bind tighter than `and`/`or` (so the idiom needs
     parentheses), and `&` binds tighter than `~=`.
 12. **The exercise** — `page_label`, the two paren decisions, the
-    `make test-lesson LESSON=04-operators` command — then **What's next: Lesson 05
-    (Control flow)**, where `if` finally arrives.
+    `make test-lesson LESSON=04-operators` command.
+13. **What's next** — Lesson 05 (Control flow), where `if` finally arrives. (Its own
+    slide, as in every other lesson's deck.)
 
 ## README (`README.md`)
 
