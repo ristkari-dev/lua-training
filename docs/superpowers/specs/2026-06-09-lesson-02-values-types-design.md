@@ -6,14 +6,14 @@
 
 ## Summary
 
-The second course lesson, built on the merged foundation (Plans A + B) and Lesson 01. Lesson 02 ("Values & types") introduces Lua's value types and the things you do with them before control flow and operators arrive: the types (`nil`, `boolean`, `number`, `string`, `table`, `function`), the **integer vs float number subtype** new in 5.4 (`math.type`), truthiness (only `nil` and `false` are falsy — so `0` and `""` are truthy), and inspection/conversion via `type`, `tostring`, `tonumber`. Students implement a single `describe(value)` function — `math.type(value) or type(value)` — which ties all three threads (values, the integer/float subtype, and truthiness) into one elegant line.
+The second course lesson, built on the merged foundation (Plans A + B) and Lesson 01. Lesson 02 ("Values & types") introduces Lua's value types and the things you do with them before control flow and operators arrive: the types (`nil`, `boolean`, `number`, `string`, `table`, `function`), the **integer vs float number subtype** new in 5.3 (`math.type`), truthiness (only `nil` and `false` are falsy — so `0` and `""` are truthy), and inspection/conversion via `type`, `tostring`, `tonumber`. Students implement a single `describe(value)` function — `math.type(value) or type(value)` — which ties all three threads (values, the integer/float subtype, and truthiness) into one elegant line.
 
 No harness change is needed: `make lint`/`make fmt` already cover `lessons/` and `make test` already loops lesson `solutions/` (both from Lesson 01). This lesson just adds `lessons/02-values-types/`.
 
 ## Learning goals
 
 1. Name Lua's value types: `nil`, `boolean`, `number`, `string`, `table`, `function`.
-2. Distinguish the **integer** and **float** number subtypes (5.4) with `math.type`.
+2. Distinguish the **integer** and **float** number subtypes (5.3) with `math.type`.
 3. State Lua's truthiness rule — only `nil` and `false` are falsy — and recognize that `0` and `""` are truthy.
 4. Inspect a value with `type` and convert with `tostring`/`tonumber` (and know `tonumber` returns `nil` on failure).
 5. Make a failing `busted` spec pass by implementing `describe`.
@@ -103,7 +103,7 @@ Identical to `exercises/values_spec.lua` (same `require("values")`, same six ass
 
 This one line is the lesson:
 
-- `math.type(value)` returns `"integer"` for `3`, `"float"` for `3.0`, and **`nil`** for anything that is not a number — the 5.4 integer/float distinction.
+- `math.type(value)` returns `"integer"` for `3`, `"float"` for `3.0`, and **`nil`** for anything that is not a number — the 5.3 integer/float distinction.
 - For non-numbers, `math.type` returns `nil`, which is **falsy**, so the `or` falls through to `type(value)` — yielding `"string"`, `"boolean"`, `"nil"`, `"table"`, etc.
 
 So the exercise demonstrates the value types, the integer/float subtype, AND truthiness (the `or`-fallback works *because* `nil` is falsy) in a single expression. `tostring`/`tonumber` are taught in the README/slides and "going further", not graded here.
@@ -114,7 +114,7 @@ So the exercise demonstrates the value types, the integer/float subtype, AND tru
 
 1. **Title** — "Lesson 02 — Values & types" + one-line goal.
 2. **The value types** — `nil`, `boolean`, `number`, `string`, `table`, `function`; `type(x)` names them.
-3. **Numbers: integer & float** — `3` is an integer, `3.0` a float (5.4); `math.type(3)` → `"integer"`, `math.type(3.0)` → `"float"`; `/` always gives a float, `//` floor-divides (a teaser for L04).
+3. **Numbers: integer & float** — `3` is an integer, `3.0` a float (5.3); `math.type(3)` → `"integer"`, `math.type(3.0)` → `"float"`; `/` always gives a float, `//` floor-divides (a teaser for L04).
 4. **Strings** — `"..."`/`'...'`/`[[...]]` literals; `..` joins (recap from L01); `#s` is the byte length.
 5. **Truthiness** — only `nil` and `false` are falsy; **everything else is truthy, including `0` and `""`** (a common surprise).
 6. **`type()` and `math.type()`** — inspect any value; `math.type` returns `nil` for non-numbers.

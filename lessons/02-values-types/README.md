@@ -1,12 +1,12 @@
 # Lesson 02 — Values & types
 
-Lua's value types, the integer/float distinction new in 5.4, and the truthiness
+Lua's value types, the integer/float distinction new in 5.3, and the truthiness
 rule. You will implement `describe(value)` to name any value's type.
 
 ## Learning goals
 
 - Name Lua's value types: nil, boolean, number, string, table, function
-- Tell integers from floats with `math.type` (a 5.4 distinction)
+- Tell integers from floats with `math.type` (new in Lua 5.3)
 - State the truthiness rule — only `nil` and `false` are falsy
 - Inspect with `type` and convert with `tostring`/`tonumber`
 - Make a failing `busted` spec pass by implementing `describe`
@@ -21,9 +21,9 @@ rule. You will implement `describe(value)` to name any value's type.
 `"number"`, `"string"`, `"table"`, `"function"`. (`thread` and `userdata` also
 exist; we meet them later.)
 
-**Integers and floats.** Lua 5.4 splits `number` into integer and float
-subtypes. `3` is an integer, `3.0` a float; `math.type(x)` returns `"integer"`,
-`"float"`, or `nil` if `x` is not a number. `/` always produces a float
+**Integers and floats.** Lua splits `number` into integer and float subtypes —
+a 5.3 addition that 5.4 keeps. `3` is an integer, `3.0` a float; `math.type(x)`
+returns `"integer"`, `"float"`, or `nil` if `x` is not a number. `/` always produces a float
 (`6 / 2` is `3.0`); `//` floor-divides (more in Lesson 04).
 
 **Truthiness.** In a boolean context, only `nil` and `false` are falsy —
