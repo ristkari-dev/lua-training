@@ -7,7 +7,7 @@ Every operator Lua has, and what each one returns. You will implement
 
 - Use the arithmetic operators: `/` always gives a float, `//` floor-divides, `%` is the matching remainder, `^` is a float and right-associative
 - Compare with `==`, `~=`, `<`, `<=`, `>`, `>=` — different types are never equal, but ordering them is an error
-- Use `and`/`or`/`not`, which return an operand rather than a boolean, and write the `a and b or c` idiom — including when it breaks
+- Use `and`/`or`, which return an operand rather than a boolean and short-circuit, and `not`, which always returns a boolean; write the `a and b or c` idiom — including when it breaks
 - Join with `..` (numbers coerce) and measure with `#` (bytes, not characters)
 - Read the bitwise operators `&`, `|`, `~`, `<<`, `>>` — integers only in 5.4
 - Know where parentheses are required, and where adding them changes the answer
@@ -19,7 +19,7 @@ Every operator Lua has, and what each one returns. You will implement
 
 ## Concepts
 
-**Arithmetic.** `/` always produces a float, even when it divides evenly: `6 / 3` is
+**Arithmetic.** `/` always produces a float, even when it divides evenly: `6 / 2` is
 `3.0`. `//` floor-divides and keeps integers integral, `%` is the matching remainder,
 and both round toward negative infinity — `-7 // 2` is `-4` and `-1 % 60` is `59`.
 `^` is always a float and right-associative, and it binds tighter than unary minus, so
@@ -43,13 +43,14 @@ you have.
 `1 .. 2` is `"12"`; coercion runs the other way in arithmetic too (`"5" + 1` is `6`).
 `#` measures a string in **bytes**, not characters: `#"Äiti"` is `5` for four letters.
 
-**Bitwise.** Lua 5.4 has `&`, `|`, `~` (xor as a binary operator, not as a unary one),
-`<<` and `>>`. They work on integers only — `3.0 & 1` is fine because `3.0` has an
-integer value, but `3.5 & 1` raises `number has no integer representation`.
+**Bitwise.** Lua 5.4 has `&`, `|`, `~`, `<<` and `>>`; `~` is binary xor, and written
+unary it is bitwise not — `~0` is `-1`. They work on integers only — `3.0 & 1` is fine
+because `3.0` has an integer value, but `3.5 & 1` raises `number has no integer
+representation`.
 
-**Precedence.** `^` binds tightest and `or` loosest. Two rules matter for the
-exercise: `+` and `..` both bind tighter than `and`/`or`, so the idiom needs
-parentheses around it; and `&` binds tighter than `~=`.
+**Precedence.** `^` binds tightest and `or` loosest. Two rules matter here: `+` and
+`..` both bind tighter than `and`/`or`, so the idiom needs parentheses around it; and
+`&` binds tighter than `~=`.
 
 ## Exercise brief
 
@@ -91,6 +92,6 @@ also what a failing test will show you.
 
 ## Going further
 
-- The other ceiling idiom: `(items + per_page - 1) // per_page`, and the terser `-(-items // per_page)`. Both avoid the remainder term.
+- Once your tests pass, try the other ceiling idiom: `(items + per_page - 1) // per_page`, and the terser `-(-items // per_page)`. Both avoid the remainder term.
 - Permissions from bits, all operators: `(flags & 4 ~= 0 and "r" or "-") .. (flags & 2 ~= 0 and "w" or "-") .. (flags & 1 ~= 0 and "x" or "-")` turns `6` into `rw-`. It needs no parentheses around the `&` because `&` binds tighter than `~=`.
 - `#` counts bytes, so `#"Äiti"` is `5`. Counting characters needs `utf8.len` (Lesson 17).

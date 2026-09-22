@@ -10,7 +10,7 @@ The fourth lesson by number, authored after Lessons 01, 02, 03 and 05. It fills 
 last Phase 1 gap before Lesson 06. Lesson 04 ("Operators & expressions") covers the
 arithmetic set (`//`, `%`, `^`, and `/` always producing a float), relational
 operators, the logical operators and the `a and b or c` idiom, `..` and `#`, the
-bitwise operators new in 5.4, and precedence.
+bitwise operators new in 5.3, and precedence.
 
 **The constraint that shapes this lesson:** it precedes Lesson 05, so students do not
 yet know `if`, `while`, `repeat` or `for`. The graded solution must be
@@ -54,9 +54,10 @@ already lists `04-operators`.
    right-associative.
 2. Compare with `==`, `~=`, `<`, `<=`, `>`, `>=` — and know that values of different
    types are never equal, while *ordering* them is a runtime error.
-3. Use `and`/`or`/`not`, knowing they return an operand rather than a boolean and
-   short-circuit; write the `a and b or c` idiom, and state the trap: it is only safe
-   when the middle operand can never be `false` or `nil`.
+3. Use `and`/`or`, knowing they return an operand rather than a boolean and
+   short-circuit, and `not`, which always returns a boolean; write the
+   `a and b or c` idiom, and state the trap: it is only safe when the middle operand
+   can never be `false` or `nil`.
 4. Join with `..` (numbers coerce to strings) and measure with `#` (bytes, not
    characters).
 5. Read and write the bitwise operators `&`, `|`, `~` (binary xor and unary not),
@@ -176,8 +177,11 @@ catches (all seven verified before this spec was written — see Verification):
 - **Parentheses, twice, in opposite directions.** Both idioms need them, because `+`
   and `..` bind tighter than `and`/`or`; omitting either breaks the function (3/6 and
   0/6). But `(pages == 1 and ("" or "s"))` raises
-  `attempt to concatenate a boolean value`, because `"" or "s"` is always `""`, which
-  makes the whole group `false`. Too few parens and too many, side by side.
+  `attempt to concatenate a boolean value` whenever `pages ~= 1`, because `"" or "s"`
+  is always `""`, which makes the whole group `false`; when `pages == 1` the group
+  correctly evaluates to `""` and the function still works, which is why this mistake
+  scores 2 successes / 4 errors rather than 0/6. Too few parens and too many, side by
+  side.
 
 ### The `math.ceil` dodge
 
@@ -222,13 +226,14 @@ value below was run against the repo's Lua 5.4.4 before this spec was written.
    coerce in arithmetic too); `..` is right-associative.
 9. **`#`** — `#"hello"` → `5`; `#"Äiti"` → `5` as well, because `#` counts **bytes**,
    not characters; `#5` is an error (`attempt to get length of a number value`).
-10. **Bitwise (5.4)** — `3 & 5` → `1`, `3 | 5` → `7`, `3 ~ 5` → `6` (binary xor),
+10. **Bitwise (5.3)** — `3 & 5` → `1`, `3 | 5` → `7`, `3 ~ 5` → `6` (binary xor),
     `~0` → `-1` (unary not), `1 << 3` → `8`, `16 >> 2` → `4`; integers only, so
     `3.0 & 1` → `1` but `3.5 & 1` errors with
     `number has no integer representation`.
-11. **Precedence** — the chain from `^` down to `or`, highlighting the two rules the
-    exercise needs: `+` and `..` bind tighter than `and`/`or` (so the idiom needs
-    parentheses), and `&` binds tighter than `~=`.
+11. **Precedence** — the chain from `^` down to `or`, highlighting two rules: `+` and
+    `..` bind tighter than `and`/`or` (so the idiom needs parentheses), and `&` binds
+    tighter than `~=` (load-bearing for the Going-further permission renderer, not the
+    exercise itself).
 12. **The exercise** — `page_label`, the two paren decisions, the
     `make test-lesson LESSON=04-operators` command.
 13. **What's next** — Lesson 05 (Control flow), where `if` finally arrives. (Its own
@@ -238,7 +243,7 @@ value below was run against the repo's Lua 5.4.4 before this spec was written.
 
 Four-file convention sections:
 
-- **Learning goals** — the seven bullets above, condensed to six lines.
+- **Learning goals** — the seven bullets above, kept as seven bullets in the README.
 - **Prereqs** — Lessons 01–03; toolchain via `make bootstrap`.
 - **Concepts** — short paragraphs mirroring the deck: the arithmetic set and what each
   returns; relational and the never-equal/cannot-compare split; logical operators, the
@@ -306,8 +311,9 @@ Four-file convention sections:
 
 ## Noticed, out of scope for this lesson
 
-- `lessons/05-control-flow/slides/slides.md` introduces `%` as if it were new; after
-  this lesson it is not. A one-line follow-up PR, deliberately not bundled here.
+- `lessons/05-control-flow/slides/slides.md` uses `%` (in the FizzBuzz code and an
+  ordering reminder) with no back-reference to Lesson 04, where `%` was already
+  taught. A one-line follow-up PR, deliberately not bundled here.
 - `tools/new-lesson` still derives a scaffolded deck's `<title>` by title-casing the
   slug, so `04-operators` scaffolds as "Lesson 04 — Operators" and must be hand-fixed.
   Its own issue, already recorded in the Lesson 03 design.

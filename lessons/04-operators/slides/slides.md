@@ -53,6 +53,7 @@ Note:
 nil and 2   -- nil    (short-circuits)
 nil or 5    -- 5
 0 or 5      -- 0      (0 is truthy — only nil and false are falsy)
+not 0       -- false  (not always returns a boolean)
 ```
 
 ---
@@ -108,7 +109,7 @@ Note:
 
 ---
 
-## Bitwise (new in 5.4)
+## Bitwise (new in 5.3)
 
 ```lua
 3 & 5       -- 1    (and)
