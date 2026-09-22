@@ -25,7 +25,7 @@ type(print)   -- "function"
 
 ## Numbers: integer & float
 
-Lua 5.4 splits numbers into integers and floats.
+Lua splits numbers into integers and floats (new in 5.3).
 
 ```lua
 math.type(3)      -- "integer"

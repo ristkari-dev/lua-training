@@ -3,14 +3,31 @@ package.path = here .. "../?.lua;" .. package.path
 local server = require("server")
 local lfs = require("lfs")
 
-local _counter = 0
+-- builder.rmtree is a pure-lfs recursive delete; the specs use it so cleanup
+-- never goes through a shell.
+package.path = here .. "../../build-index/?.lua;" .. package.path
+local rmtree = require("builder").rmtree
+
+-- os.time() was not unique enough: two runs inside the same second collided with
+-- "File exists". os.tmpname() supplies the unique part, while $TMPDIR still
+-- decides where the directory lives.
+local _created = {}
 local function tmpdir()
-  _counter = _counter + 1
+  local stamp = os.tmpname()
+  os.remove(stamp) -- os.tmpname creates a file; we only wanted its unique name
   local base = (os.getenv("TMPDIR") or "/tmp"):gsub("/+$", "")
-  local path = string.format("%s/lua-training-slides-%d-%d", base, os.time(), _counter)
+  local path = base .. "/lua-training-slides-" .. stamp:match("([^/]+)$")
   assert(lfs.mkdir(path))
+  _created[#_created + 1] = path
   return path
 end
+
+after_each(function()
+  for _, path in ipairs(_created) do
+    rmtree(path)
+  end
+  _created = {}
+end)
 
 local function mkpath(path)
   local accum = ""

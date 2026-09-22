@@ -3,6 +3,26 @@ package.path = here .. "../?.lua;" .. package.path
 local catalog = require("catalog")
 
 describe("catalog", function()
+  describe("find", function()
+    it("returns the row for a listed number and slug", function()
+      local lesson = catalog.find("06", "functions-testing")
+      assert.is_truthy(lesson)
+      assert.are.equal("Functions & testing", lesson.title)
+    end)
+
+    it("returns nil when the number matches but the slug does not", function()
+      assert.is_nil(catalog.find("06", "functions-and-testing"))
+    end)
+
+    it("returns nil when the slug matches but the number does not", function()
+      assert.is_nil(catalog.find("07", "functions-testing"))
+    end)
+
+    it("returns nil for a lesson the catalog does not list", function()
+      assert.is_nil(catalog.find("99", "demo"))
+    end)
+  end)
+
   it("has 23 lessons", function()
     assert.are.equal(23, #catalog.LESSONS)
   end)

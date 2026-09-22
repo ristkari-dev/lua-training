@@ -47,6 +47,8 @@ local function mkdir_p(path)
   end
 end
 
+-- Duplicated as a local in tools/new-lesson/new_lesson.lua, which escapes the
+-- scaffolded deck title. Change both together.
 function M.escape_html(text)
   local out = text:gsub("&", "&amp;")
   out = out:gsub("<", "&lt;")
